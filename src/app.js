@@ -1,12 +1,32 @@
 const express = require("express");
 const app = express();
 const PUERTO = 8080;
+const exphbs = require("express-handlebars");
+const socket = require("socket.io");
 
+const viewsRouter = require("./routes/views.routes.js");
 const ProductManager = require("../src/controllers/ProductManager.js");
 const productManager = new ProductManager("./src/models/productos.json");
 
+//Handlebars
+app.engine("handlebars", exphbs.engine());
+app.set("view engine", "handlebars");
+app.set("views", "./src/views");
+
 //Middleware
 app.use(express.json());
+app.use(express.static("./src/public"));
+
+//Routing
+app.use("/", viewsRouter);
+
+//Array de Usuarios
+const usuarios = [
+  { id: 1, nombre: "Juan", apellido: "Perez" },
+  { id: 2, nombre: "Ricardo", apellido: "Perez" },
+  { id: 3, nombre: "Estefano", apellido: "Perez" },
+  { id: 4, nombre: "Juanillo", apellido: "Luque" },
+];
 
 //Traer todos los productos
 
@@ -82,4 +102,27 @@ app.delete("/api/products/:pid", async (req, res) => {
   }
 });
 
-app.listen(PUERTO);
+//Inicio de servidor
+
+const httpServer = app.listen(PUERTO, () => {
+  console.log(`Escuchando en el puerto ${PUERTO} `);
+});
+
+//Socket.io
+const io = socket(httpServer);
+io.on("connection", async (socket) => {
+  console.log("Nuevo cliente conectado");
+  //Envio Array
+  socket.emit("productos", await productManager.getProducts());
+  //Evento eliminar
+  socket.on("eliminarProducto", async (id) => {
+    await productManager.deleteProduct(id);
+    //Envio la lista actualizada al cliente:
+    io.sockets.emit("productos", await productManager.getProducts());
+  });
+  //Agrego Producto
+  socket.on("agregarProducto", async (producto) => {
+    await productManager.addProduct(producto);
+    io.sockets.emit("productos", await productManager.getProducts());
+  });
+});

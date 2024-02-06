@@ -1,24 +1,13 @@
 [
   {
-    "title": "Carne De Cerdo",
-    "price": 800,
-    "description": "Carne De Cerdo",
-    "thumbnails": [],
-    "code": "A",
-    "stock": 100,
-    "category": "Carnes",
-    "status": true,
-    "id": 1
-  },
-  {
-    "title": "Carne De Vaca",
-    "price": 80,
+    "title": "Vaca",
+    "price": "80",
     "description": "Carne De Vaca",
     "thumbnails": [],
-    "code": "B",
-    "stock": 100,
-    "category": "Carnes",
+    "code": "A",
+    "stock": "80",
+    "category": "Media Res",
     "status": true,
-    "id": 2
+    "id": 1
   }
 ]
