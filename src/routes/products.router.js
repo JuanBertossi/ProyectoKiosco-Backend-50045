@@ -18,7 +18,7 @@ router.get("/", async (req, res) => {
 
     res.json({
       status: "success",
-      payload: productos,
+      payload: productos.docs,
       totalPages: productos.totalPages,
       prevPage: productos.prevPage,
       nextPage: productos.nextPage,
@@ -36,7 +36,7 @@ router.get("/", async (req, res) => {
     console.error("Error al obtener productos", error);
     res.status(500).json({
       status: "error",
-      error: "Error interno del servidor",
+      error: "Error del servidor",
     });
   }
 });

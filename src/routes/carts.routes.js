@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const CartManager = require("../controllers/cart-managerdb");
 const cartManager = new CartManager();
+const CartModel = require("../models/cart.model.js");
 
 //Crear nuevo carrito:POST
 
@@ -15,17 +16,23 @@ router.post("/", async (req, res) => {
   }
 });
 
-//Listar uno de los productos del carrito:GET
+//Listar los productos del carrito:GET
 
 router.get("/:cid", async (req, res) => {
   const cartId = req.params.cid;
 
   try {
-    const carrito = await cartManager.getCarritoById(cartId);
-    res.json(carrito.products);
+    const carrito = await CartModel.findById(cartId);
+
+    if (!carrito) {
+      console.log("No existe ese carrito con el id");
+      return res.status(404).json({ error: "Carrito no encontrado" });
+    }
+
+    return res.json(carrito.products);
   } catch (error) {
     console.error("Error al obtener el carrito", error);
-    res.status(500).json({ error: "Error del servidor" });
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 });
 

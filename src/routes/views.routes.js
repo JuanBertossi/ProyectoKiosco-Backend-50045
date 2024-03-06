@@ -1,5 +1,9 @@
 const express = require("express");
 const router = express.Router();
+const ProductManager = require("../controllers/product-managerdb.js");
+const CartManager = require("../controllers/cart-managerdb.js");
+const productManager = new ProductManager();
+const cartManager = new CartManager();
 
 router.get("/products", async (req, res) => {
   try {
