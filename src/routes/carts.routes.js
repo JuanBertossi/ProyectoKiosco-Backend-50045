@@ -3,7 +3,7 @@ const router = express.Router();
 const CartManager = require("../controllers/cart-managerdb");
 const cartManager = new CartManager();
 
-//1) Crear nuevo carrito:
+//Crear nuevo carrito:POST
 
 router.post("/", async (req, res) => {
   try {
@@ -15,7 +15,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-//2) Listar uno de los productos del carrito.
+//Listar uno de los productos del carrito:GET
 
 router.get("/:cid", async (req, res) => {
   const cartId = req.params.cid;
@@ -29,7 +29,7 @@ router.get("/:cid", async (req, res) => {
   }
 });
 
-//3) Agregar productos a distintos carritos.
+//Agregar productos a distintos carritos:POST
 
 router.post("/:cid/product/:pid", async (req, res) => {
   const cartId = req.params.cid;
@@ -46,6 +46,106 @@ router.post("/:cid/product/:pid", async (req, res) => {
   } catch (error) {
     console.error("Error al agregar producto al carrito", error);
     res.status(500).json({ error: "Error del servidor" });
+  }
+});
+
+//Eliminamos un producto especifico del carrito:DELETE
+
+router.delete("/:cid/product/:pid", async (req, res) => {
+  try {
+    const cartId = req.params.cid;
+    const productId = req.params.pid;
+
+    const updatedCart = await cartManager.eliminarProductoDelCarrito(
+      cartId,
+      productId
+    );
+
+    res.json({
+      status: "success",
+      message: "Producto eliminado del carrito exitosamente",
+      updatedCart,
+    });
+  } catch (error) {
+    console.error("Error al eliminar el producto del carrito por ID", error);
+    res.status(500).json({
+      status: "error",
+      error: "Error del servidor",
+    });
+  }
+});
+
+//5) Actualizamos productos del carrito:PUT
+
+router.put("/:cid", async (req, res) => {
+  const cartId = req.params.cid;
+  const updatedProducts = req.body;
+
+  try {
+    const updatedCart = await cartManager.actualizarCarrito(
+      cartId,
+      updatedProducts
+    );
+    res.json(updatedCart);
+  } catch (error) {
+    console.error("Error al actualizar el carrito", error);
+    res.status(500).json({
+      status: "error",
+      error: "Error del servidor",
+    });
+  }
+});
+
+//6) Actualizamos las cantidades de productos:PUT
+
+router.put("/:cid/product/:pid", async (req, res) => {
+  try {
+    const cartId = req.params.cid;
+    const productId = req.params.pid;
+    const newQuantity = req.body.quantity;
+
+    const updatedCart = await cartManager.actualizarCantidadDeProducto(
+      cartId,
+      productId,
+      newQuantity
+    );
+
+    res.json({
+      status: "success",
+      message: "Cantidad del producto actualizada exitosamente",
+      updatedCart,
+    });
+  } catch (error) {
+    console.error(
+      "Error al actualizar la cantidad del producto en el carrito",
+      error
+    );
+    res.status(500).json({
+      status: "error",
+      error: "Error del servidor",
+    });
+  }
+});
+
+//7) Vaciamos el carrito:DELETE
+
+router.delete("/:cid", async (req, res) => {
+  try {
+    const cartId = req.params.cid;
+
+    const updatedCart = await cartManager.vaciarCarrito(cartId);
+
+    res.json({
+      status: "success",
+      message: "Todos los productos del carrito fueron eliminados exitosamente",
+      updatedCart,
+    });
+  } catch (error) {
+    console.error("Error al vaciar todo el carrito", error);
+    res.status(500).json({
+      status: "error",
+      error: "Error del servidor",
+    });
   }
 });
 
