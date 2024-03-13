@@ -6,6 +6,8 @@ const exphbs = require("express-handlebars");
 const userRouter = require("./routes/user.routes.js");
 const sessionRouter = require("./routes/session.routes.js");
 const viewsRouter = require("./routes/views.routes.js");
+const productsRouter = require("./routes/products.router.js");
+const cartsRouter = require("./routes/carts.routes.js");
 const initializePassport = require("./config/passport.config.js");
 const passport = require("passport");
 const app = express();
@@ -40,9 +42,12 @@ initializePassport();
 app.use(passport.initialize());
 app.use(passport.session());
 
+//Routes
 app.use("/api/users", userRouter);
 app.use("/api/sessions", sessionRouter);
 app.use("/", viewsRouter);
+app.use("/api/products", productsRouter);
+app.use("/api/carts", cartsRouter);
 
 app.listen(PUERTO, () => {
   console.log(`Escuchando en el puerto: ${PUERTO}`);
