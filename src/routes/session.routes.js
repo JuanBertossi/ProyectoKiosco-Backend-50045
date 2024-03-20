@@ -40,4 +40,25 @@ router.get("/logout", (req, res) => {
   res.redirect("/login");
 });
 
+//GitHub
+router.get(
+  "/github",
+  passport.authenticate("github", { scope: ["user:email"] }),
+  async (req, res) => {}
+);
+
+router.get(
+  "/githubcallback",
+  passport.authenticate("github", { failureRedirect: "/login" }),
+  async (req, res) => {
+    req.session.user = {
+      name: req.user.firstName,
+      email: req.user.email,
+      age: req.user.age,
+    };
+
+    res.redirect("/products");
+  }
+);
+
 module.exports = router;
