@@ -1,18 +1,19 @@
-<form action="/api/users" method="post">
-    <label for="first_name">First Name:</label>
-    <input type="text" id="first_name" name="first_name" required>
-    <br>
-    <label for="last_name">Last Name:</label>
-    <input type="text" id="last_name" name="last_name" required>
-    <br>
+<h1>Registrarse</h1>
+<form class="formulario" action="/api/users/register" method="post">
+    <label for="first_name">Nombre:</label>
+    <input type="text" class="formLoginReg" id="first_name" name="first_name" required>
+    
+    <label for="last_name">Apellido:</label>
+    <input type="text" class="formLoginReg" id="last_name" name="last_name" required>
+    
     <label for="email">Email:</label>
-    <input type="email" id="email" name="email" required>
-    <br>
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" required>
-    <br>
-    <label for="age">Age:</label>
-    <input type="number" id="age" name="age" required>
-    <br>
-    <button type="submit">Register</button>
+    <input type="email" class="formLoginReg" id="email" name="email" required>
+    
+    <label for="password">Contraseña:</label>
+    <input type="password" class="formLoginReg" id="password" name="password" required>
+    
+    <label for="age">Edad:</label>
+    <input type="number" class="formLoginReg" id="age" name="age" required>
+    
+    <button class="btnMulti" type="submit">Register</button>
 </form>

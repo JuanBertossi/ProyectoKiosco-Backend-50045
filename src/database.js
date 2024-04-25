@@ -1,12 +1,8 @@
-//MongoDB
-
 const mongoose = require("mongoose");
-const configObject = require("./config/config.js");
-const { mongo_url } = configObject;
-
-//Conexion Base De Datos
 
 mongoose
-  .connect(mongo_url)
-  .then(() => console.log("Conexion exitosa"))
-  .catch(() => console.log("Error en la conexion"));
+  .connect(
+    "mongodb+srv://bertossijuani:Juanito2023@cluster0.ff4gbbu.mongodb.net/ecommerce?retryWrites=true&w=majority&appName=Cluster0"
+  )
+  .then(() => console.log("Conexión exitosa"))
+  .catch(() => console.log("Error en la conexión"));

@@ -1,42 +1,30 @@
 const express = require("express");
 const router = express.Router();
-const ProductController = require("../controllers/products.controller");
-const CartController = require("../controllers/cart.controller");
-const productController = new ProductController();
-const cartController = new CartController();
+const ViewsController = require("../controllers/view.controller.js");
+const viewsController = new ViewsController();
+const checkUserRole = require("../middleware/chekrole.js");
+const passport = require("passport");
 
-// Rutas de productos
-router.get("/products", async (req, res) => {
-  await productController.getProducts(req, res);
-});
-
-// Rutas de carrito
-router.get("/carts/:cid", async (req, res) => {
-  await cartController.getCartById(req, res);
-});
-
-// Ruta del formulario de inicio de sesión
-router.get("/login", (req, res) => {
-  if (req.session.login) {
-    return res.redirect("/profile");
-  }
-  res.render("login");
-});
-
-// Ruta del formulario de registro
-router.get("/register", (req, res) => {
-  if (req.session.login) {
-    return res.redirect("/profile");
-  }
-  res.render("register");
-});
-
-// Ruta de la vista de perfil
-router.get("/profile", (req, res) => {
-  if (!req.session.login) {
-    return res.redirect("/login");
-  }
-  res.render("profile", { user: req.session.user });
-});
+//Ruta Productos
+router.get(
+  "/products",
+  checkUserRole(["usuario"]),
+  passport.authenticate("jwt", { session: false }),
+  viewsController.renderProducts
+);
+//Ruta Carrito
+router.get("/carts/:cid", viewsController.renderCart);
+//Loguearse
+router.get("/login", viewsController.renderLogin);
+//Registrarse
+router.get("/register", viewsController.renderRegister);
+router.get(
+  "/realtimeproducts",
+  checkUserRole(["admin"]),
+  viewsController.renderRealTimeProducts
+);
+//Ruta Chat
+router.get("/chat", checkUserRole(["usuario"]), viewsController.renderChat);
+router.get("/", viewsController.renderHome);
 
 module.exports = router;

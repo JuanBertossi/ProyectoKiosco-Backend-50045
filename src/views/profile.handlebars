@@ -1,5 +1,55 @@
+<style>
+  h1 {
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  .profile-card {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f2f2f2;
+    border-radius: 5px;
+    text-align: center;
+  }
+
+  .profile-card p {
+    margin-bottom: 10px;
+  }
+
+  .profile-card .btnMulti {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: blue;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+
+
+  .profile-card a {
+    display: block;
+    margin-bottom: 10px;
+    text-decoration: none;
+  }
+</style>
+
 <h1>Mi Perfil</h1>
-<p>Bienvenido!, {{user.first_name}} {{user.last_name}}!</p>
-<p>Email: {{user.email}}</p>
-<p>Edad: {{user.age}}</p>
-<a href="/api/sessions/logout">Logout</a>
+
+<div class="profile-card">
+  <p>Bienvenido, {{user.nombre}} {{user.apellido}}!</p>
+  <p>Rol: {{user.role}}</p>
+
+  <form action="/api/users/logout" method="POST">
+    <button class="btnMulti" type="submit">Logout</button>
+  </form>
+
+  {{#if this.isAdmin}}
+    <a class="btnMulti" href="/realtimeproducts">Modificar Productos</a>
+  {{else}}
+    <a class="btnMulti" href="/chat">Chat en vivo</a>
+    <a class="btnMulti" href="/products">Tienda</a>
+  {{/if}}
+</div>

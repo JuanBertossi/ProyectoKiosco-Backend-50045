@@ -1,4 +1,140 @@
-h1 {
-  color: red;
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Fira+Sans:wght@300&display=swap");
+
+body {
+  font-family: "Roboto", sans-serif;
+}
+
+/*HEADER*/
+
+.logoKiosco {
+  width: 250px;
+  height: 150px;
+}
+
+.logoKiosco:hover {
+  width: 350px;
+  height: 200px;
+}
+
+.fuentesNav {
+  font-size: 1.5rem;
+  font-family: "Fira Sans", sans-serif;
+}
+
+.encabezado {
+  border-top: solid 20px blue;
+  margin-bottom: 30px;
+}
+
+nav li a {
+  text-transform: uppercase;
+  text-decoration: none;
+  margin: 15px;
+  padding: 0 15px;
+}
+
+.h {
+  height: 400px;
+}
+.container-fluid {
+  height: 200px;
+}
+/* PRODUCTOS */
+
+.tituloProductos {
+  background-color: blue;
+  color: #fafafa;
   text-align: center;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.tituloProductos h2 {
+  font-size: 35px;
+}
+
+.subtituloProductos {
+  background-color: blue;
+  color: #fafafa;
+  text-align: center;
+  font-weight: bold;
+  padding: 10px;
+  margin-top: 20px;
+}
+
+.imgCarrito {
+  width: 80px;
+  height: 80px;
+}
+
+.productsPag {
+  text-decoration: none;
+  padding: 10px;
+  color: black;
+  font-size: 16px;
+  cursor: pointer;
+}
+/*Cards*/
+
+.card-img-top {
+  height: 300px;
+  object-fit: cover;
+  object-position: center top;
+}
+
+/*Cart*/
+
+.bg-warning {
+  width: 340px;
+}
+
+/* Estilos del formulario de inicio de sesión */
+h1 {
+  text-align: center;
+}
+
+.formulario {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f2f2f2;
+  border-radius: 5px;
+}
+
+label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: bold;
+  color: #333;
+}
+
+.formLoginReg {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 20px;
+  border: none;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.btnMulti {
+  width: 100%;
+  padding: 10px;
+  background-color: blue;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.btnMulti:hover {
+  background-color: blueviolet;
+}
+
+i {
+  font-size: 35px;
 }

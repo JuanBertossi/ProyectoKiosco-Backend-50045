@@ -1,30 +1,27 @@
 const express = require("express");
 const router = express.Router();
-const UserModel = require("../models/user.model");
-const { createHash } = require("../utils/hashbcryp.js");
 const passport = require("passport");
+const UserController = require("../controllers/user.controller.js");
 
-router.post(
-  "/",
-  passport.authenticate("register", { failureRedirect: "/failedregister" }),
-  async (req, res) => {
-    if (!req.user) return res.status(400).send({ status: "error" });
+const userController = new UserController();
 
-    req.session.user = {
-      first_name: req.user.first_name,
-      last_name: req.user.last_name,
-      age: req.user.age,
-      email: req.user.email,
-    };
-
-    req.session.login = true;
-
-    res.redirect("/profile");
-  }
+//Registrarse
+router.post("/register", userController.register);
+//Loguearse
+router.post("/login", userController.login);
+//Obtener el perfil del usuario
+router.get(
+  "/profile",
+  passport.authenticate("jwt", { session: false }),
+  userController.profile
 );
-
-router.get("/failedregister", (req, res) => {
-  res.send({ error: "Registro fallido" });
-});
+//Desloguearse
+router.post("/logout", userController.logout.bind(userController));
+//Admin
+router.get(
+  "/admin",
+  passport.authenticate("jwt", { session: false }),
+  userController.admin
+);
 
 module.exports = router;

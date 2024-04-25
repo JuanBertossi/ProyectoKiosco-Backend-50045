@@ -2,67 +2,71 @@ const ProductRepository = require("../repositories/products.repositories.js");
 const productRepository = new ProductRepository();
 
 class ProductController {
-  async getProducts(req, res) {
-    try {
-      const productos = await productRepository.getAllProducts();
-      res.status(200).json(productos);
-    } catch (error) {
-      res.status(500).json({ error: "Error del servidor" });
-    }
-  }
-
   async addProduct(req, res) {
     const nuevoProducto = req.body;
     try {
-      await productRepository.addProduct(nuevoProducto);
-      res.status(200).send("Producto creado");
+      const resultado = await productRepository.agregarProducto(nuevoProducto);
+      res.json(resultado);
     } catch (error) {
-      res
-        .status(500)
-        .json({ error: "Error del servidor al agregar el producto" });
+      res.status(500).send("Error");
+    }
+  }
+
+  async getProducts(req, res) {
+    try {
+      let { limit = 10, page = 1, sort, query } = req.query;
+
+      const productos = await productRepository.obtenerProductos(
+        limit,
+        page,
+        sort,
+        query
+      );
+
+      res.json(productos);
+    } catch (error) {
+      res.status(500).send("Error");
     }
   }
 
   async getProductById(req, res) {
-    const productId = req.params.pid;
+    const id = req.params.pid;
     try {
-      const producto = await productRepository.getProductById(productId);
-      if (!producto) {
-        return res.status(404).json({ error: "Producto no encontrado" });
+      const buscado = await productRepository.obtenerProductoPorId(id);
+      if (!buscado) {
+        return res.json({
+          error: "Producto no encontrado",
+        });
       }
-      res.status(200).json(producto);
+      res.json(buscado);
     } catch (error) {
-      res.status(500).json({ error: "Error del servidor" });
+      res.status(500).send("Error");
     }
   }
 
   async updateProduct(req, res) {
-    const productId = req.params.pid;
-    const updatedProduct = req.body;
     try {
-      const producto = await productRepository.updateProduct(
-        productId,
-        updatedProduct
+      const id = req.params.pid;
+      const productoActualizado = req.body;
+
+      const resultado = await productRepository.actualizarProducto(
+        id,
+        productoActualizado
       );
-      if (!producto) {
-        return res.status(404).json({ error: "Producto no encontrado" });
-      }
-      res.status(200).send("Producto actualizado");
+      res.json(resultado);
     } catch (error) {
-      res.status(500).json({ error: "Error del servidor" });
+      res.status(500).send("Error al actualizar el producto");
     }
   }
 
   async deleteProduct(req, res) {
-    const productId = req.params.pid;
+    const id = req.params.pid;
     try {
-      const producto = await productRepository.deleteProduct(productId);
-      if (!producto) {
-        return res.status(404).json({ error: "Producto no encontrado" });
-      }
-      res.status(200).send("Producto eliminado");
+      let respuesta = await productRepository.eliminarProducto(id);
+
+      res.json(respuesta);
     } catch (error) {
-      res.status(500).json({ error: "Error del servidor" });
+      res.status(500).send("Error al eliminar el producto");
     }
   }
 }
