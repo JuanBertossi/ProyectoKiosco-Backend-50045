@@ -4,6 +4,7 @@ const ViewsController = require("../controllers/view.controller.js");
 const viewsController = new ViewsController();
 const checkUserRole = require("../middleware/chekrole.js");
 const passport = require("passport");
+const mockingProductsController = require("../controllers/mockingProductsController");
 
 //Ruta Productos
 router.get(
@@ -26,5 +27,7 @@ router.get(
 //Ruta Chat
 router.get("/chat", checkUserRole(["usuario"]), viewsController.renderChat);
 router.get("/", viewsController.renderHome);
+//Mocking Products
+router.get("/mockingproducts", mockingProductsController.generateMockProducts);
 
 module.exports = router;

@@ -3,6 +3,7 @@ const app = express();
 const exphbs = require("express-handlebars");
 const cookieParser = require("cookie-parser");
 const passport = require("passport");
+const compression = require("express-compression");
 const initializePassport = require("../src/config/passport.config.js");
 const cors = require("cors");
 const path = require("path");
@@ -28,6 +29,16 @@ app.use(cookieParser());
 //AuthMiddleware
 const authMiddleware = require("../src/middleware/authmiddleware.js");
 app.use(authMiddleware);
+
+//Compression
+app.use(
+  compression({
+    brotli: {
+      enabled: true,
+      zlib: {},
+    },
+  })
+);
 
 //Handlebars
 app.engine("handlebars", exphbs.engine());

@@ -1,6 +1,9 @@
 const UserModel = require("../models/user.model.js");
 const CartModel = require("../models/cart.model.js");
 const jwt = require("jsonwebtoken");
+const CustomError = require("../services/errors/custom-error.js");
+const EErrors = require("../services/errors/enums.js");
+const { generarInfoError } = require("../services/errors/info.js");
 const { createHash, isValidPassword } = require("../utils/hashbcryp.js");
 const UserDTO = require("../dto/user.dto.js");
 
@@ -10,10 +13,24 @@ class UserController {
     try {
       const existeUsuario = await UserModel.findOne({ email });
       if (existeUsuario) {
-        return res.status(400).send("El usuario ya existe");
+        throw new CustomError(
+          "El usuario ya existe",
+          "ErrorUsuarioExistente",
+          "Usuario duplicado",
+          EErrors.USUARIO_EXISTENTE
+        );
       }
 
-      //Crear un nuevo carrito:
+      const infoError = generarInfoError({ first_name, last_name, email });
+      if (infoError) {
+        throw new CustomError(
+          "Datos de usuario incompletos o inválidos",
+          "ErrorDatosUsuario",
+          infoError,
+          EErrors.DATOS_USUARIO_INVALIDOS
+        );
+      }
+
       const nuevoCarrito = new CartModel();
       await nuevoCarrito.save();
 
@@ -39,8 +56,27 @@ class UserController {
 
       res.redirect("/api/users/profile");
     } catch (error) {
-      console.error(error);
-      res.status(500).send("Error interno del servidor");
+      if (error instanceof CustomError) {
+        console.error(error);
+        return res.status(400).json({
+          error: {
+            name: error.name,
+            cause: error.cause,
+            message: error.message,
+            code: error.code,
+          },
+        });
+      } else {
+        console.error(error);
+        return res.status(500).json({
+          error: {
+            name: "ErrorInterno",
+            cause: "Desconocido",
+            message: "Error interno del servidor",
+            code: EErrors.ERROR_INTERNO,
+          },
+        });
+      }
     }
   }
 
@@ -50,12 +86,20 @@ class UserController {
       const usuarioEncontrado = await UserModel.findOne({ email });
 
       if (!usuarioEncontrado) {
-        return res.status(401).send("Usuario no válido");
+        throw new CustomError({
+          name: "ErrorUsuarioNoValido",
+          message: "Usuario no válido",
+          code: EErrors.USUARIO_NO_VALIDO,
+        });
       }
 
       const esValido = isValidPassword(password, usuarioEncontrado);
       if (!esValido) {
-        return res.status(401).send("Contraseña incorrecta");
+        throw new CustomError({
+          name: "ErrorContraseñaIncorrecta",
+          message: "Contraseña incorrecta",
+          code: EErrors.CONTRASEÑA_INCORRECTA,
+        });
       }
 
       const token = jwt.sign({ user: usuarioEncontrado }, "coderhouse", {
@@ -69,13 +113,31 @@ class UserController {
 
       res.redirect("/api/users/profile");
     } catch (error) {
-      console.error(error);
-      res.status(500).send("Error interno del servidor");
+      if (error instanceof CustomError) {
+        console.error(error);
+        return res.status(400).json({
+          error: {
+            name: error.name,
+            cause: error.cause,
+            message: error.message,
+            code: error.code,
+          },
+        });
+      } else {
+        console.error(error);
+        return res.status(500).json({
+          error: {
+            name: "ErrorInterno",
+            cause: "Desconocido",
+            message: "Error interno del servidor",
+            code: EErrors.ERROR_INTERNO,
+          },
+        });
+      }
     }
   }
 
   async profile(req, res) {
-    //DTO:
     const userDto = new UserDTO(
       req.user.first_name,
       req.user.last_name,
