@@ -158,6 +158,15 @@ class UserController {
     }
     res.render("admin");
   }
+
+  //Retorna usuario: Artillery
+  async user(req, res) {
+    const user = {
+      usuario: faker.person.firstName(),
+      password: faker.internet.password(),
+    };
+    res.send(user);
+  }
 }
 
 module.exports = UserController;

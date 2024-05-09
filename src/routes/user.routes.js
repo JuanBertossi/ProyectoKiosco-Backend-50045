@@ -23,5 +23,7 @@ router.get(
   passport.authenticate("jwt", { session: false }),
   userController.admin
 );
+//User Artillery
+router.get("/user", userController.user);
 
 module.exports = router;

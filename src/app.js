@@ -5,6 +5,7 @@ const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const compression = require("express-compression");
 const initializePassport = require("../src/config/passport.config.js");
+const addLogger = require("../src/utils/logger.js");
 const cors = require("cors");
 const path = require("path");
 const PUERTO = 8080;
@@ -20,6 +21,39 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cors());
+app.use(addLogger);
+
+//Test
+
+app.get("/loggerTest", (req, res) => {
+  req.logger.error("Vamos a morir");
+  req.logger.warning("Cuidado! Hombre radiactivo!");
+  req.logger.info("Estamos navegando la app");
+
+  res.send("Logs generados!");
+});
+
+//Simulamos algunas operaciones para testear con Artillery:
+
+app.get("/operacionsimple", (req, res) => {
+  let suma = 0;
+  for (let i = 0; i < 1000000; i++) {
+    suma += i;
+  }
+
+  res.send({ suma });
+});
+
+//Operacion compleja:
+
+app.get("/operacioncompleja", (req, res) => {
+  let suma = 0;
+  for (let i = 0; i < 5e8; i++) {
+    suma += i;
+  }
+
+  res.send({ suma });
+});
 
 //Passport
 app.use(passport.initialize());
