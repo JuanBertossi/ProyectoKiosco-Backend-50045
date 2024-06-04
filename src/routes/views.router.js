@@ -2,32 +2,32 @@ const express = require("express");
 const router = express.Router();
 const ViewsController = require("../controllers/view.controller.js");
 const viewsController = new ViewsController();
-const checkUserRole = require("../middleware/chekrole.js");
+const checkUserRole = require("../middleware/checkrole.js");
 const passport = require("passport");
-const mockingProductsController = require("../controllers/mockingProductsController");
 
-//Ruta Productos
 router.get(
   "/products",
-  checkUserRole(["usuario"]),
+  checkUserRole(["usuario", "premium"]),
   passport.authenticate("jwt", { session: false }),
   viewsController.renderProducts
 );
-//Ruta Carrito
+
 router.get("/carts/:cid", viewsController.renderCart);
-//Loguearse
 router.get("/login", viewsController.renderLogin);
-//Registrarse
 router.get("/register", viewsController.renderRegister);
 router.get(
   "/realtimeproducts",
-  checkUserRole(["admin"]),
+  checkUserRole(["admin", "premium"]),
   viewsController.renderRealTimeProducts
 );
-//Ruta Chat
-router.get("/chat", checkUserRole(["usuario"]), viewsController.renderChat);
+router.get(
+  "/chat",
+  checkUserRole(["usuario", "premium"]),
+  viewsController.renderChat
+);
 router.get("/", viewsController.renderHome);
-//Mocking Products
-router.get("/mockingproducts", mockingProductsController.generateMockProducts);
+router.get("/reset-password", viewsController.renderResetPassword);
+router.get("/password", viewsController.renderCambioPassword);
+router.get("/confirmacion-envio", viewsController.renderConfirmacion);
 
 module.exports = router;

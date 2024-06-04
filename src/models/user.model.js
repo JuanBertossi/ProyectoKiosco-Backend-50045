@@ -5,20 +5,23 @@ const userSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+
   last_name: {
     type: String,
     required: true,
   },
+
   email: {
     type: String,
     required: true,
-    unique: true,
     index: true,
+    unique: true,
   },
+
   password: {
     type: String,
-    //required: true,
   },
+
   age: {
     type: Number,
     required: true,
@@ -29,8 +32,12 @@ const userSchema = mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ["admin", "usuario"],
+    enum: ["admin", "usuario", "premium"],
     default: "usuario",
+  },
+  resetToken: {
+    token: String,
+    expiresAt: Date,
   },
 });
 

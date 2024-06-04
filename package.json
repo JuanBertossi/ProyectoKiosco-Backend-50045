@@ -33,10 +33,15 @@
     "path": "^0.12.7",
     "session-file-store": "^1.5.0",
     "socket.io": "^4.7.4",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
     "sweetalert2": "^11.10.8",
     "winston": "^3.13.0"
   },
   "devDependencies": {
-    "nodemon": "^3.0.3"
+    "chai": "^5.1.1",
+    "mocha": "^10.4.0",
+    "nodemon": "^3.0.3",
+    "supertest": "^7.0.0"
   }
 }

@@ -1,5 +1,5 @@
 const ProductModel = require("../models/product.model.js");
-const CartRepository = require("../repositories/cart.repositories.js");
+const CartRepository = require("../repositories/cart.repository.js");
 const cartRepository = new CartRepository();
 
 class ViewsController {
@@ -24,6 +24,7 @@ class ViewsController {
       });
 
       const cartId = req.user.cart.toString();
+      //console.log(cartId);
 
       res.render("products", {
         productos: nuevoArray,
@@ -47,7 +48,7 @@ class ViewsController {
   async renderCart(req, res) {
     const cartId = req.params.cid;
     try {
-      const carrito = await cartRepository.obtenerProductosDelCarrito(cartId);
+      const carrito = await cartRepository.obtenerProductosDeCarrito(cartId);
 
       if (!carrito) {
         console.log("No existe ese carrito con el id");
@@ -90,10 +91,14 @@ class ViewsController {
   }
 
   async renderRealTimeProducts(req, res) {
+    const usuario = req.user;
     try {
-      res.render("realtimeproducts");
+      res.render("realtimeproducts", {
+        role: usuario.role,
+        email: usuario.email,
+      });
     } catch (error) {
-      console.log("Error en la vista real time", error);
+      console.log("error en la vista real time", error);
       res.status(500).json({ error: "Error interno del servidor" });
     }
   }
@@ -104,6 +109,18 @@ class ViewsController {
 
   async renderHome(req, res) {
     res.render("home");
+  }
+
+  async renderResetPassword(req, res) {
+    res.render("passwordreset");
+  }
+
+  async renderCambioPassword(req, res) {
+    res.render("passwordcambio");
+  }
+
+  async renderConfirmacion(req, res) {
+    res.render("confirmacion-envio");
   }
 }
 

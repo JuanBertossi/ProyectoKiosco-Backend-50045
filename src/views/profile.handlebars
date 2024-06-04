@@ -49,6 +49,9 @@
   {{#if this.isAdmin}}
     <a class="btnMulti" href="/realtimeproducts">Modificar Productos</a>
   {{else}}
+  {{#if this.isPremium}}
+	<a class="btnMulti" href="/realtimeproducts">Panel Premium</a>
+	{{/if}}
     <a class="btnMulti" href="/chat">Chat en vivo</a>
     <a class="btnMulti" href="/products">Tienda</a>
   {{/if}}

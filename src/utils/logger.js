@@ -1,5 +1,4 @@
 const winston = require("winston");
-//Niveles:
 
 const niveles = {
   nivel: {
@@ -20,7 +19,6 @@ const niveles = {
   },
 };
 
-//Crear nuevo Logger pero ahora configurando los niveles y los colores
 const logger = winston.createLogger({
   levels: niveles.nivel,
   transports: [
@@ -32,7 +30,6 @@ const logger = winston.createLogger({
       ),
     }),
 
-    //Agregamos un nuevo transporte:
     new winston.transports.File({
       filename: "./errors.log",
       level: "warning",
@@ -40,8 +37,6 @@ const logger = winston.createLogger({
     }),
   ],
 });
-
-//Creamos nuestro propio middleware donde vamos a usar este logger:
 
 const addLogger = (req, res, next) => {
   req.logger = logger;

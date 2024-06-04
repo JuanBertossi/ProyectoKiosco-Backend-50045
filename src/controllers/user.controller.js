@@ -1,11 +1,12 @@
 const UserModel = require("../models/user.model.js");
 const CartModel = require("../models/cart.model.js");
 const jwt = require("jsonwebtoken");
-const CustomError = require("../services/errors/custom-error.js");
-const EErrors = require("../services/errors/enums.js");
-const { generarInfoError } = require("../services/errors/info.js");
 const { createHash, isValidPassword } = require("../utils/hashbcryp.js");
 const UserDTO = require("../dto/user.dto.js");
+const { generateResetToken } = require("../utils/tokenreset.js");
+
+const EmailManager = require("../services/email.js");
+const emailManager = new EmailManager();
 
 class UserController {
   async register(req, res) {
@@ -13,22 +14,7 @@ class UserController {
     try {
       const existeUsuario = await UserModel.findOne({ email });
       if (existeUsuario) {
-        throw new CustomError(
-          "El usuario ya existe",
-          "ErrorUsuarioExistente",
-          "Usuario duplicado",
-          EErrors.USUARIO_EXISTENTE
-        );
-      }
-
-      const infoError = generarInfoError({ first_name, last_name, email });
-      if (infoError) {
-        throw new CustomError(
-          "Datos de usuario incompletos o inválidos",
-          "ErrorDatosUsuario",
-          infoError,
-          EErrors.DATOS_USUARIO_INVALIDOS
-        );
+        return res.status(400).send("El usuario ya existe");
       }
 
       const nuevoCarrito = new CartModel();
@@ -56,27 +42,8 @@ class UserController {
 
       res.redirect("/api/users/profile");
     } catch (error) {
-      if (error instanceof CustomError) {
-        console.error(error);
-        return res.status(400).json({
-          error: {
-            name: error.name,
-            cause: error.cause,
-            message: error.message,
-            code: error.code,
-          },
-        });
-      } else {
-        console.error(error);
-        return res.status(500).json({
-          error: {
-            name: "ErrorInterno",
-            cause: "Desconocido",
-            message: "Error interno del servidor",
-            code: EErrors.ERROR_INTERNO,
-          },
-        });
-      }
+      console.error(error);
+      res.status(500).send("Error interno del servidor");
     }
   }
 
@@ -86,20 +53,12 @@ class UserController {
       const usuarioEncontrado = await UserModel.findOne({ email });
 
       if (!usuarioEncontrado) {
-        throw new CustomError({
-          name: "ErrorUsuarioNoValido",
-          message: "Usuario no válido",
-          code: EErrors.USUARIO_NO_VALIDO,
-        });
+        return res.status(401).send("Usuario no válido");
       }
 
       const esValido = isValidPassword(password, usuarioEncontrado);
       if (!esValido) {
-        throw new CustomError({
-          name: "ErrorContraseñaIncorrecta",
-          message: "Contraseña incorrecta",
-          code: EErrors.CONTRASEÑA_INCORRECTA,
-        });
+        return res.status(401).send("Contraseña incorrecta");
       }
 
       const token = jwt.sign({ user: usuarioEncontrado }, "coderhouse", {
@@ -113,38 +72,24 @@ class UserController {
 
       res.redirect("/api/users/profile");
     } catch (error) {
-      if (error instanceof CustomError) {
-        console.error(error);
-        return res.status(400).json({
-          error: {
-            name: error.name,
-            cause: error.cause,
-            message: error.message,
-            code: error.code,
-          },
-        });
-      } else {
-        console.error(error);
-        return res.status(500).json({
-          error: {
-            name: "ErrorInterno",
-            cause: "Desconocido",
-            message: "Error interno del servidor",
-            code: EErrors.ERROR_INTERNO,
-          },
-        });
-      }
+      console.error(error);
+      res.status(500).send("Error interno del servidor");
     }
   }
-
   async profile(req, res) {
-    const userDto = new UserDTO(
-      req.user.first_name,
-      req.user.last_name,
-      req.user.role
-    );
-    const isAdmin = req.user.role === "admin";
-    res.render("profile", { user: userDto, isAdmin });
+    try {
+      const isPremium = req.user.role === "premium";
+      const userDto = new UserDTO(
+        req.user.first_name,
+        req.user.last_name,
+        req.user.role
+      );
+      const isAdmin = req.user.role === "admin";
+
+      res.render("profile", { user: userDto, isPremium, isAdmin });
+    } catch (error) {
+      res.status(500).send("Error interno del servidor");
+    }
   }
 
   async logout(req, res) {
@@ -159,13 +104,96 @@ class UserController {
     res.render("admin");
   }
 
-  //Retorna usuario: Artillery
-  async user(req, res) {
-    const user = {
-      usuario: faker.person.firstName(),
-      password: faker.internet.password(),
-    };
-    res.send(user);
+  async requestPasswordReset(req, res) {
+    const { email } = req.body;
+
+    try {
+      const user = await UserModel.findOne({ email });
+      if (!user) {
+        return res.status(404).send("Usuario no encontrado");
+      }
+      const token = generateResetToken();
+      user.resetToken = {
+        token: token,
+        expiresAt: new Date(Date.now() + 3600000),
+      };
+      await user.save();
+
+      await emailManager.enviarCorreoRestablecimiento(
+        email,
+        user.first_name,
+        token
+      );
+
+      res.redirect("/confirmacion-envio");
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Error interno del servidor");
+    }
+  }
+
+  async resetPassword(req, res) {
+    const { email, password, token } = req.body;
+
+    try {
+      const user = await UserModel.findOne({ email });
+      if (!user) {
+        return res.render("passwordcambio", { error: "Usuario no encontrado" });
+      }
+
+      const resetToken = user.resetToken;
+      if (!resetToken || resetToken.token !== token) {
+        return res.render("passwordreset", {
+          error: "El token de restablecimiento de contraseña es inválido",
+        });
+      }
+
+      const now = new Date();
+      if (now > resetToken.expiresAt) {
+        return res.redirect("/passwordcambio");
+      }
+
+      if (isValidPassword(password, user)) {
+        return res.render("passwordcambio", {
+          error: "La nueva contraseña no puede ser igual a la anterior",
+        });
+      }
+
+      user.password = createHash(password);
+      user.resetToken = undefined;
+      +(await user.save());
+
+      return res.redirect("/login");
+    } catch (error) {
+      console.error(error);
+      return res
+        .status(500)
+        .render("passwordreset", { error: "Error interno del servidor" });
+    }
+  }
+
+  async cambiarRolPremium(req, res) {
+    try {
+      const { uid } = req.params;
+
+      const user = await UserModel.findById(uid);
+
+      if (!user) {
+        return res.status(404).json({ message: "Usuario no encontrado" });
+      }
+
+      const nuevoRol = user.role === "usuario" ? "premium" : "usuario";
+
+      const actualizado = await UserModel.findByIdAndUpdate(
+        uid,
+        { role: nuevoRol },
+        { new: true }
+      );
+      res.json(actualizado);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
   }
 }
 

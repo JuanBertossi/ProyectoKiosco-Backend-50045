@@ -10,6 +10,7 @@ class ProductRepository {
     stock,
     category,
     thumbnails,
+    owner,
   }) {
     try {
       if (!title || !description || !price || !code || !stock || !category) {
@@ -20,9 +21,11 @@ class ProductRepository {
       const existeProducto = await ProductModel.findOne({ code: code });
 
       if (existeProducto) {
-        console.log("El código debe ser único");
+        console.log("El código debe ser único, malditooo!!!");
         return;
       }
+
+      console.log("Owner", owner);
 
       const newProduct = new ProductModel({
         title,
@@ -34,6 +37,7 @@ class ProductRepository {
         category,
         status: true,
         thumbnails: thumbnails || [],
+        owner,
       });
 
       await newProduct.save();
@@ -120,7 +124,7 @@ class ProductRepository {
         productoActualizado
       );
       if (!actualizado) {
-        console.log("Procuto no encontrado");
+        console.log("No se encuentra el producto");
         return null;
       }
 
@@ -136,11 +140,11 @@ class ProductRepository {
       const deleteado = await ProductModel.findByIdAndDelete(id);
 
       if (!deleteado) {
-        console.log("Producto no encontrado");
+        console.log("No se encuentra el producto");
         return null;
       }
 
-      console.log("Producto eliminado");
+      console.log("Producto eliminado correctamente");
       return deleteado;
     } catch (error) {
       throw new Error("Error");

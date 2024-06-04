@@ -1,0 +1,135 @@
+paths:
+  /api/products:
+    get:
+      summary: Obtener todos los productos
+      tags:
+        - Products
+      responses:
+        200:
+          description: Lista de productos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+    post:
+      summary: Agregar un nuevo producto
+      tags:
+        - Products
+      requestBody:
+        description: Producto a agregar
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Product"
+      responses:
+        200:
+          description: Producto agregado exitosamente
+  /api/products/{pid}:
+    get:
+      summary: Obtener producto por ID
+      tags:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 65d188d284e84a5ebc791baf
+      responses:
+        200:
+          description: Producto encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+    put:
+      summary: Actualizar producto
+      tags:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 65d188d284e84a5ebc791baf
+      requestBody:
+        description: Datos del producto a actualizar
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Product"
+      responses:
+        200:
+          description: Producto actualizado exitosamente
+    delete:
+      summary: Eliminar producto
+      tags:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 665a7c10368067f41d869c85
+      responses:
+        200:
+          description: Producto eliminado exitosamente
+
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        title:
+          type: string
+          description: El título del producto
+          example: "Aceite"
+        description:
+          type: string
+          description: La descripción del producto
+          example: "Aceite de alta calidad"
+        code:
+          type: string
+          description: El código único del producto
+          example: "A"
+        price:
+          type: number
+          description: El precio del producto
+          example: 29.99
+        status:
+          type: boolean
+          description: El estado del producto (disponible o no)
+          example: true
+        stock:
+          type: number
+          description: La cantidad de stock disponible del producto
+          example: 100
+        category:
+          type: string
+          description: La categoría del producto
+          example: "Aceites"
+        thumbnails:
+          type: array
+          items:
+            type: string
+            description: URL de la imagen del producto
+          description: Lista de URLs de imágenes del producto
+          example: ["/img.jpg"]
+        owner:
+          type: string
+          description: El propietario del producto
+          example: "ADMIN"
+      required:
+        - title
+        - description
+        - code
+        - price
+        - stock
+        - category

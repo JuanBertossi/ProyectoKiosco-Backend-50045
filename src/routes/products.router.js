@@ -1,17 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const ProductController = require("../controllers/products.controller");
-const productController = new ProductController();
+const ProductController = require("../controllers/product.controller.js");
+const productController = new ProductController(); 
+const passport = require("passport");
 
-// Obtener todos los productos
 router.get("/", productController.getProducts);
-// Agregar un nuevo producto
-router.post("/", productController.addProduct);
-// Obtener un producto por su ID
 router.get("/:pid", productController.getProductById);
-// Actualizar un producto por su ID
+router.post("/", passport.authenticate("jwt", { session: false }) ,productController.addProduct);
 router.put("/:pid", productController.updateProduct);
-// Eliminar un producto por su ID
 router.delete("/:pid", productController.deleteProduct);
 
 module.exports = router;
