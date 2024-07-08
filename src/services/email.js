@@ -54,6 +54,27 @@ class EmailManager {
       throw new Error("Error al enviar correo electrónico");
     }
   }
+
+  async enviarCorreoEliminacionPorInactividad(email, first_name) {
+    try {
+      const mailOptions = {
+        from: "Coder Test <testingprogramacion0@gmail.com>",
+        to: email,
+        subject: "Eliminación de Cuenta por Inactividad",
+        html: `
+                <h1>Eliminación de Cuenta por Inactividad</h1>
+                <p>Hola ${first_name},</p>
+                <p>Tu cuenta ha sido eliminada debido a inactividad.</p>
+                <p>Si crees que esto fue un error, por favor contáctanos.</p>
+            `,
+      };
+
+      await this.transporter.sendMail(mailOptions);
+    } catch (error) {
+      console.error("Error al enviar correo electrónico:", error);
+      throw new Error("Error al enviar correo electrónico");
+    }
+  }
 }
 
 module.exports = EmailManager;

@@ -76,6 +76,7 @@ class UserController {
       res.status(500).send("Error interno del servidor");
     }
   }
+
   async profile(req, res) {
     try {
       const isPremium = req.user.role === "premium";
@@ -98,10 +99,22 @@ class UserController {
   }
 
   async admin(req, res) {
-    if (req.user.user.role !== "admin") {
-      return res.status(403).send("Acceso denegado");
+    try {
+      if (!req.user || !req.user.role) {
+        return res.status(403).send("Acceso denegado");
+      }
+
+      if (req.user.role !== "admin") {
+        return res.status(403).send("Acceso denegado");
+      }
+
+      const users = await UserModel.find({}, { _id: 0, password: 0, __v: 0 }); // Excluye _id, password y __v del resultado
+
+      res.render("admin", { users });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Error interno del servidor");
     }
-    res.render("admin");
   }
 
   async requestPasswordReset(req, res) {
@@ -193,6 +206,74 @@ class UserController {
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Error interno del servidor" });
+    }
+  }
+
+  async getAllUsers(req, res) {
+    try {
+      const users = await UserModel.find({}, { _id: 0, password: 0, __v: 0 }); // Excluye _id, password y __v del resultado
+      res.json(users);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Error interno del servidor");
+    }
+  }
+
+  async deleteInactiveUsers(req, res) {
+    try {
+      const deletedUsers = [];
+      const users = await UserModel.find({});
+
+      for (const user of users) {
+        const lastConnectionDate = new Date(user.last_connection);
+        const now = new Date();
+        const timeDifference = Math.abs(now - lastConnectionDate);
+        const minutesDifference = Math.floor(timeDifference / (1000 * 60));
+
+        if (minutesDifference > 30) {
+          const deletedUser = await UserModel.findByIdAndDelete(user._id);
+
+          await emailManager.enviarCorreoEliminacionPorInactividad(
+            user.email,
+            user.first_name
+          );
+
+          deletedUsers.push(deletedUser);
+        }
+      }
+
+      res.json({ deletedUsers });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  }
+
+  async updateUserRole(req, res) {
+    const { id } = req.params;
+    const { role } = req.body;
+
+    try {
+      const updatedUser = await UserModel.findByIdAndUpdate(
+        id,
+        { role },
+        { new: true }
+      );
+      res.json(updatedUser);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  }
+
+  async deleteUser(req, res) {
+    const userId = req.params.userId;
+    try {
+      await UserModel.findByIdAndDelete(userId);
+      res.redirect("/admin"); // Redirige después de eliminar
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Error interno del servidor");
     }
   }
 }

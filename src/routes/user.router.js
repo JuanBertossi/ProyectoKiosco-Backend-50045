@@ -18,8 +18,14 @@ router.get(
   passport.authenticate("jwt", { session: false }),
   userController.admin
 );
-router.post("/requestPasswordReset", userController.requestPasswordReset); // Nueva ruta
+router.post("/requestPasswordReset", userController.requestPasswordReset);
 router.post("/reset-password", userController.resetPassword);
 router.put("/premium/:uid", userController.cambiarRolPremium);
+
+router.get("/", userController.getAllUsers);
+router.delete("/", userController.deleteInactiveUsers);
+
+router.delete("/:userId", userController.deleteUser);
+router.put("/:userId/role", userController.updateUserRole);
 
 module.exports = router;
