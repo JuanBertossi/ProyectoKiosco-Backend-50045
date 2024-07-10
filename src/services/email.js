@@ -12,66 +12,27 @@ class EmailManager {
     });
   }
 
-  async enviarCorreoCompra(email, first_name, ticket) {
+  async enviarCorreoProductoEliminado(email, productName) {
     try {
       const mailOptions = {
-        from: "Coder Test <testingprogramacion0@gmail.com>",
-        to: email,
-        subject: "Confirmación de compra",
+        from: "bertossijuani@gmail.com",
+        to: "testingprogramacion0@gmail.com",
+        subject: "Producto Eliminado",
         html: `
-                    <h1>Confirmación de compra</h1>
-                    <p>Gracias por tu compra, ${first_name}!</p>
-                    <p>El número de tu orden es: ${ticket}</p>
-                `,
+          <h1>Producto Eliminado</h1>
+          <p>Estimado usuario,</p>
+          <p>El producto ${productName} ha sido eliminado de su cuenta.</p>
+          <p>Atentamente,</p>
+          <p>Tu equipo de soporte</p>
+        `,
       };
 
       await this.transporter.sendMail(mailOptions);
+      console.log(
+        `Correo enviado a ${email} sobre la eliminación del producto ${productName}`
+      );
     } catch (error) {
       console.error("Error al enviar el correo electrónico:", error);
-    }
-  }
-
-  async enviarCorreoRestablecimiento(email, first_name, token) {
-    try {
-      const mailOptions = {
-        from: "testingprogramacion0@gmail.com",
-        to: email,
-        subject: "Restablecimiento de Contraseña",
-        html: `
-                    <h1>Restablecimiento de Contraseña</h1>
-                    <p>Hola ${first_name},</p>
-                    <p>Has solicitado restablecer tu contraseña. Utiliza el siguiente código para cambiar tu contraseña:</p>
-                    <p><strong>${token}</strong></p>
-                    <p>Este código expirará en 1 hora.</p>
-                    <a href="http://localhost:8080/password">Restablecer Contraseña</a>
-                    <p>Si no solicitaste este restablecimiento, ignora este correo.</p>
-                `,
-      };
-
-      await this.transporter.sendMail(mailOptions);
-    } catch (error) {
-      console.error("Error al enviar correo electrónico:", error);
-      throw new Error("Error al enviar correo electrónico");
-    }
-  }
-
-  async enviarCorreoEliminacionPorInactividad(email, first_name) {
-    try {
-      const mailOptions = {
-        from: "Coder Test <testingprogramacion0@gmail.com>",
-        to: email,
-        subject: "Eliminación de Cuenta por Inactividad",
-        html: `
-                <h1>Eliminación de Cuenta por Inactividad</h1>
-                <p>Hola ${first_name},</p>
-                <p>Tu cuenta ha sido eliminada debido a inactividad.</p>
-                <p>Si crees que esto fue un error, por favor contáctanos.</p>
-            `,
-      };
-
-      await this.transporter.sendMail(mailOptions);
-    } catch (error) {
-      console.error("Error al enviar correo electrónico:", error);
       throw new Error("Error al enviar correo electrónico");
     }
   }

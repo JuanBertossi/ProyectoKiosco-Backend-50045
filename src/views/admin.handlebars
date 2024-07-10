@@ -44,7 +44,6 @@
                 <th>Nombre</th>
                 <th>Correo</th>
                 <th>Rol</th>
-                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -54,18 +53,6 @@
                     <td>{{this.email}}</td>
                     <td>{{this.role}}</td>
                     <td>
-                        <form action="/api/users/{{this._id}}/role" method="POST">
-                            <input type="hidden" name="_method" value="PUT">
-                                <select name="role">
-                                    <option value="usuario">Usuario</option>
-                                    <option value="premium">Premium</option>
-                                    <option value="admin">Admin</option>
-                                </select>
-                            <button type="submit">Modificar Rol</button>
-                        </form>
-                        <form action="/api/users/delete?id={{this._id}}" method="POST">
-    <button type="submit">Eliminar Usuario</button>
-</form>
                     </td>
                 </tr>
             {{/each}}

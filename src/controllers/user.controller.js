@@ -211,7 +211,7 @@ class UserController {
 
   async getAllUsers(req, res) {
     try {
-      const users = await UserModel.find({}, { _id: 0, password: 0, __v: 0 }); // Excluye _id, password y __v del resultado
+      const users = await UserModel.find({}, { _id: 0, password: 0, __v: 0 });
       res.json(users);
     } catch (error) {
       console.error(error);
@@ -246,34 +246,6 @@ class UserController {
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Error interno del servidor" });
-    }
-  }
-
-  async updateUserRole(req, res) {
-    const { id } = req.params;
-    const { role } = req.body;
-
-    try {
-      const updatedUser = await UserModel.findByIdAndUpdate(
-        id,
-        { role },
-        { new: true }
-      );
-      res.json(updatedUser);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Error interno del servidor" });
-    }
-  }
-
-  async deleteUser(req, res) {
-    const userId = req.params.userId;
-    try {
-      await UserModel.findByIdAndDelete(userId);
-      res.redirect("/admin"); // Redirige después de eliminar
-    } catch (error) {
-      console.error(error);
-      res.status(500).send("Error interno del servidor");
     }
   }
 }

@@ -135,19 +135,27 @@ class ProductRepository {
     }
   }
 
-  async eliminarProducto(id) {
+  async eliminarProducto(id, userEmail) {
     try {
-      const deleteado = await ProductModel.findByIdAndDelete(id);
+      const deletedProduct = await ProductModel.findByIdAndDelete(id);
 
-      if (!deleteado) {
-        console.log("No se encuentra el producto");
+      if (!deletedProduct) {
+        console.log("Producto no encontrado");
         return null;
       }
 
+      if (userEmail) {
+        await emailManager.enviarCorreoProductoEliminado(
+          userEmail,
+          deletedProduct.name
+        );
+      }
+
       console.log("Producto eliminado correctamente");
-      return deleteado;
+      return deletedProduct;
     } catch (error) {
-      throw new Error("Error");
+      console.error("Error al eliminar producto:", error);
+      throw new Error("Error interno del servidor");
     }
   }
 }

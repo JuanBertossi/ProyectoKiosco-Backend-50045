@@ -25,7 +25,4 @@ router.put("/premium/:uid", userController.cambiarRolPremium);
 router.get("/", userController.getAllUsers);
 router.delete("/", userController.deleteInactiveUsers);
 
-router.delete("/:userId", userController.deleteUser);
-router.put("/:userId/role", userController.updateUserRole);
-
 module.exports = router;
