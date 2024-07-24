@@ -52,7 +52,7 @@ app.use("/api/carts", cartsRouter);
 app.use("/api/users", userRouter);
 app.use("/", viewsRouter);
 
-const PUERTO = process.env.PORT || 8080;
+const PUERTO = process.env.PORT || 3000;
 
 const httpServer = app.listen(PUERTO, () => {
   console.log(`Servidor escuchando en el puerto ${PUERTO}`);
