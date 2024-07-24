@@ -1,8 +1,18 @@
 const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+
+dotenv.config();
+
+const mongoUri = process.env.MONGODB_URI;
 
 mongoose
-  .connect(
-    "mongodb+srv://bertossijuani:Juanito2023@cluster0.ff4gbbu.mongodb.net/ecommerce?retryWrites=true&w=majority&appName=Cluster0"
-  )
-  .then(() => console.log("Conexión exitosa"))
-  .catch(() => console.log("Error en la conexión"));
+  .connect(mongoUri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("Conexión exitosa a la base de datos"))
+  .catch((error) =>
+    console.log("Error en la conexión a la base de datos:", error)
+  );
+
+module.exports = mongoose;
