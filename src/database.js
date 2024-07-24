@@ -9,6 +9,7 @@ mongoose
   .connect(mongoUri, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    serverSelectionTimeoutMS: 30000,
   })
   .then(() => console.log("Conexión exitosa a la base de datos"))
   .catch((error) =>
