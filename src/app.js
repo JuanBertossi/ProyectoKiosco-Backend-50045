@@ -8,8 +8,9 @@ const path = require("path");
 const methodOverride = require("method-override");
 const swaggerJSDoc = require("swagger-jsdoc");
 const swaggerUiExpress = require("swagger-ui-express");
-const PUERTO = process.env.PUERTO || 8080;
+const PUERTO = 8080;
 require("./database.js");
+require("dotenv").config();
 
 const productsRouter = require("./routes/products.router.js");
 const cartsRouter = require("./routes/carts.router.js");
