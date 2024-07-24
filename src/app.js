@@ -8,7 +8,6 @@ const path = require("path");
 const methodOverride = require("method-override");
 const swaggerJSDoc = require("swagger-jsdoc");
 const swaggerUiExpress = require("swagger-ui-express");
-const PUERTO = 8080;
 require("./database.js");
 require("dotenv").config();
 
@@ -52,6 +51,8 @@ app.use("/api/products", productsRouter);
 app.use("/api/carts", cartsRouter);
 app.use("/api/users", userRouter);
 app.use("/", viewsRouter);
+
+const PUERTO = process.env.PORT || 8080;
 
 const httpServer = app.listen(PUERTO, () => {
   console.log(`Servidor escuchando en el puerto ${PUERTO}`);
