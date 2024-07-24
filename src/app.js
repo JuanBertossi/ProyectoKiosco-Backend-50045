@@ -8,7 +8,7 @@ const path = require("path");
 const methodOverride = require("method-override");
 const swaggerJSDoc = require("swagger-jsdoc");
 const swaggerUiExpress = require("swagger-ui-express");
-const PUERTO = 8080;
+const PUERTO = process.env.PUERTO || 8080;
 require("./database.js");
 
 const productsRouter = require("./routes/products.router.js");
