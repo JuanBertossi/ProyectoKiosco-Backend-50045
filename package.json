@@ -2,7 +2,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon src/app.js --mode desarrollo",
-    "start": "node src/app.js --mode produccion"
+    "start": "node src/app.js"
   },
   "dependencies": {
     "@faker-js/faker": "^8.4.1",
