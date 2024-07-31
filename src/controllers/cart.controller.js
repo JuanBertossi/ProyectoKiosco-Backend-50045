@@ -165,7 +165,9 @@ class CartController {
       await emailManager.enviarCorreoCompra(
         userWithCart.email,
         userWithCart.first_name,
-        ticket._id
+        ticket._id,
+        products,
+        calcularTotal(products)
       );
 
       res.render("checkout", {
